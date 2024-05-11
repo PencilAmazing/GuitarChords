@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      body {
+          font-family: sans-serif;
+          font-size: 12pt;
+      }
+      #container {
+          display: flex;
+          gap: 2em;
+          padding: 1em;
+      }
+      h1, h2 {
+          text-align: center;
+      }
+      .chord {
+          border: 2px solid skyblue;
+          border-radius: 40px;
+          background-color: lightgrey;
+          padding: 3em;
+          margins: 10px;
+          font-weight: bold;
+      }
+      .navigation {
+          list-style-type: none;
+          
+          width: fit-content;
+          padding: 0;
+          margin-left: auto;
+          margin-right:auto;
+
+          display:flex;
+          flex-direction:row;
+          flex-wrap: wrap;
+          align-content: space-between;
+          gap: 10px;
+      }
+      
+      .navigation > li{
+        flex: 1;
+        border: 2px solid black;
+        border-radius: 5px;
+        text-align: center;
+        height: fit-content;
+        display: block;
+        border-radius: 5px;
+        padding: 0.5em;
+        background-color: lightgrey
+      }
+      #Keys > li {
+        font-weight: bold;
+        padding-left: 1em;
+        padding-right: 1em;
+        font-size: 16pt;
+      }
+      #Suffixed > li {
+          text-wrap:nowrap;
+          font-size: 11pt;
+      }
+      .navigation > li:hover {
+          background-color: skyblue;
+      }
+
+      #searchBar {
+          text-align:center;
+      }
+    </style>
+    <script type="text/javascript" src="./guitarData.js"></script>
+<!--<script type="text/javascript" src="./index.jsx"></script> -->
+
+  </head>
+  <body>
+    <h1>Guitar chords</h1>
+    <h2>Display guitar chord variations</h2>
+    <!-- A tab menu would be very nice here! -->
+    <script type="module" src="./index.jsx"></script>
+    <ul id="Keys" class="navigation"></ul>
+    <hr/>
+    <ul id="Suffixed" class="navigation"></ul>
+    <hr/>
+    <form id="searchBar" onsubmit="addChord(); return false;">
+      <input type="text" id="chordSearch" autocomplete="off">
+      <input type="submit" value="Submit">
+    </form>
+    <div id="container">
+      <!-- <div class="chord"> -->
+      <!--   Chord 1 -->
+      <!-- </div> -->
+      <!-- <div class="chord"> -->
+      <!--   Chord 2 -->
+      <!-- </div> -->
+    </div>
+  </body>
+</html>
