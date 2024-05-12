@@ -1,28 +1,27 @@
 // Global variable guitarData is available
 // Prepare other global tables
 
-import {createRoot} from 'react-dom/client'
+// BIG TODO: Global state mess, move it all to be jsx side
+// No need for html really, just make it into a placeholder
 
+import {createRoot} from 'react-dom/client'
+import {useState} from 'react'
+
+let containerRoot = null;
 function displayKey(key, suffixedRoot) {
   //console.log(guitarData.chords[key]);
   let suffixed = guitarData.chords[key.replace('#', 'sharp')].map((g) =>
-    <li key={g.suffix} onClick={() => chordFound(g.key+g.suffix)}>{g.key+g.suffix}</li>
+    <li key={g.suffix} onClick={() => chordFound([g.key, g.suffix])}>{g.key+g.suffix}</li>
   )
   suffixedRoot.render(suffixed)
 }
 
 // On start, add navigation
 function onStart() {
-  //const root = createRoot(document.getElementById('Keys'));
-  //root.render(<h1>Hello, world</h1>);
-
   const nav = createRoot(document.getElementById("Keys"))
   const suffixedRoot = createRoot(document.getElementById('Suffixed'))
   suffixedRoot.render("eh")
-  /*guitarData["Keys"].forEach((e) => {
-    let entry = createElement("li")
-    entry.appendChild(document.createTextNode())
-  })*/
+
   let cnt = 0
   const listItems = guitarData["keys"].map((e)=>
     <li key={cnt++} onClick={() => displayKey(e, suffixedRoot)}>{e}</li>
@@ -36,6 +35,8 @@ function onStart() {
     e.preventDefault()
     addChord();
   })
+
+  containerRoot = createRoot(document.getElementById("container"))
   //searchBar.setAttribute('onsubmit', "return false;")
 }
 
@@ -102,23 +103,44 @@ function chordNotFound() {
   console.log("Chord not found")
 }
 
-function ChordDisplay(key, suffix) {
-  let chords = guitarData.keys[key].find((e) => e.suffix == suffix);
+// FIXME can't be called key. rename it to be something else
+// FIXME variant is non-functional, always starts at zero
+function ChordDisplay({baseKey, suffix, variant = 0}) {
+  console.log(baseKey, suffix, variant)
+  let chordVariants = guitarData.chords[baseKey].find((e) => e.suffix == suffix);
+
+  // Save state per chord image
+  let [which, setWhich] = useState(0)
+
+  function nextVariant(backwards = false) {
+    setWhich(which + (backwards ? -1 : 1))
+  }
 
   return (
-    <div class="chord">
-        {key+suffix}
+    <div className="chord">
+      <p>{baseKey}-{suffix}-{variant}</p>
+      <svg version="1.1" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        {baseKey+suffix}
+      </svg>
+      <br/>
+      <div style={{display:'flex'}}>
+      <button>&lt</button>
+      <p>{which}</p>
+      <button>&gt</button>
+      </div>
     </div>
   )
 }
 
 // TODO make this fancy
+// 1. Create another root (or consolidate all into one?)
 function chordFound(parsedChord) {
-  const chordDiv = document.createElement("div");
-  chordDiv.setAttribute('class', 'chord')
-  chordDiv.appendChild(document.createTextNode(parsedChord));
-  document.getElementById("container").appendChild(chordDiv)
+  //const chordDiv = document.createElement("div");
+  //chordDiv.setAttribute('class', 'chord')
+  //chordDiv.appendChild(document.createTextNode(parsedChord));
+  //document.getElementById("container").appendChild(chordDiv)
 
+  containerRoot.render(<ChordDisplay baseKey={parsedChord[0]} suffix={parsedChord[1]} variant={0}/>)
   // Clear input
   document.getElementById("chordSearch").value = ""
 }
