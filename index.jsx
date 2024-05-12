@@ -38,6 +38,9 @@ function onStart() {
 
   containerRoot = createRoot(document.getElementById("container"))
   //searchBar.setAttribute('onsubmit', "return false;")
+
+  chordFound(['C', 'major'])
+  chordFound(['A', 'major'])
 }
 
 function getSearchValue() {
@@ -103,30 +106,68 @@ function chordNotFound() {
   console.log("Chord not found")
 }
 
-// FIXME can't be called key. rename it to be something else
+function generateSVG() {
+
+}
+
 // FIXME variant is non-functional, always starts at zero
+// FIXME didn't make space for open and muted strings
 function ChordDisplay({baseKey, suffix, variant = 0}) {
   console.log(baseKey, suffix, variant)
-  let chordVariants = guitarData.chords[baseKey].find((e) => e.suffix == suffix);
 
   // Save state per chord image
   let [which, setWhich] = useState(0)
+
+  let chordVariants = guitarData.chords[baseKey].find((e) => e.suffix == suffix).positions;
+  let chordVariant = chordVariants[which]
 
   function nextVariant(backwards = false) {
     setWhich(which + (backwards ? -1 : 1))
   }
 
+  // Draw lower frets (4 more)
+  let frets = []
+  for(let i = 0; i < 4; i++) {
+    const spacing = 20*(i+1) + "%"
+    frets.push(<line key={i} x1="0" x2="100%" y1={spacing} y2={spacing} stroke="black" strokeWidth="2"/>)
+    frets.push(<line key={2*i} y1="0" y2="100%" x1={spacing} x2={spacing} stroke="black" strokeWidth="2"/>)
+  }
+
+  //fretOffset = chordVariant.baseFret
+  let shape = chordVariant.frets.map((e, i) => {
+    let cx = 20*i + "%"
+    let cy = 20*(e-chordVariant.baseFret) + 10 + "%"
+    let fill = "black"
+    if(e == -1)
+      fill = "red"
+    else if (e < chordVariant.baseFret) {
+      // If below base fret, open string
+      fill = "transparent"
+      // position accordingly
+      cy = "10%"
+    }
+
+    return <circle key={i*3} cx={cx} cy={cy} r="8" stroke="black" fill={fill}/>
+  })
+  //for(var i = 0; i < chordVariant.frets.length)
+
+  // Functional programming only in JSX :^)
   return (
     <div className="chord">
       <p>{baseKey}-{suffix}-{variant}</p>
-      <svg version="1.1" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-        {baseKey+suffix}
+      <svg version="1.1" width="100" height="200" xmlns="http://www.w3.org/2000/svg">
+        // frame
+        <rect width="100%" height="100%" fill="transparent" stroke="black" strokeWidth="2"/>
+        // Top of fretboard (thick if base fret == 1, otherwise like others
+        <line x1="0%" x2="100%" y1="0" y2="0" stroke="black" strokeWidth="15"/>
+        {frets}
+        {shape}
       </svg>
       <br/>
       <div style={{display:'flex'}}>
-      <button>&lt</button>
-      <p>{which}</p>
-      <button>&gt</button>
+        <button>{'<'}</button>
+        <p>{which}</p>
+        <button>{'>'}</button>
       </div>
     </div>
   )
