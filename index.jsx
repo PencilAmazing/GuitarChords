@@ -129,8 +129,8 @@ function ChordDisplay({baseKey, suffix, variant = 0}) {
   let frets = []
   for(let i = 0; i < 4; i++) {
     const spacing = 20*(i+1) + "%"
-    frets.push(<line key={i} x1="0" x2="100%" y1={spacing} y2={spacing} stroke="black" strokeWidth="2"/>)
-    frets.push(<line key={2*i} y1="0" y2="100%" x1={spacing} x2={spacing} stroke="black" strokeWidth="2"/>)
+    frets.push(<line key={"fret"+i} x1="0" x2="100%" y1={spacing} y2={spacing} stroke="black" strokeWidth="2"/>)
+    frets.push(<line key={"string"+i} y1="0" y2="100%" x1={spacing} x2={spacing} stroke="black" strokeWidth="2"/>)
   }
 
   //fretOffset = chordVariant.baseFret
@@ -147,21 +147,23 @@ function ChordDisplay({baseKey, suffix, variant = 0}) {
       cy = "10%"
     }
 
-    return <circle key={i*3} cx={cx} cy={cy} r="8" stroke="black" fill={fill}/>
+    return <circle key={"finger"+i} cx={cx} cy={cy} r="8" stroke="black" fill={fill}/>
   })
-  //for(var i = 0; i < chordVariant.frets.length)
+
+  // Top of fretboard (thick if base fret == 1, otherwise like others
+  let topFret = <line x1="0%" x2="100%" y1="0" y2="0" stroke="black"
+                      strokeWidth={chordVariant.baseFret==1?"15": "2"}/>
+  let boardFrame = <rect width="100%" height="100%" fill="transparent" stroke="black" strokeWidth="2"/>
 
   // Functional programming only in JSX :^)
   return (
     <div className="chord">
       <p>{baseKey}-{suffix}-{variant}</p>
       <svg version="1.1" width="100" height="200" xmlns="http://www.w3.org/2000/svg">
-        // frame
-        <rect width="100%" height="100%" fill="transparent" stroke="black" strokeWidth="2"/>
-        // Top of fretboard (thick if base fret == 1, otherwise like others
-        <line x1="0%" x2="100%" y1="0" y2="0" stroke="black" strokeWidth="15"/>
-        {frets}
         {shape}
+        {topFret}
+        {frets}
+        {boardFrame}
       </svg>
       <br/>
       <div style={{display:'flex'}}>
